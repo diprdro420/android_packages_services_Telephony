@@ -363,7 +363,7 @@ public class CallFeaturesSetting extends PreferenceActivity
     private ListPreference mT9SearchInputLocale;
     private CheckBoxPreference mButtonProximity;
     private CheckBoxPreference mAllowCallRecording;
-
+    private ListPreference mCallRecordingFormat;
     private class VoiceMailProvider {
         public VoiceMailProvider(String name, Intent intent) {
             this.name = name;
