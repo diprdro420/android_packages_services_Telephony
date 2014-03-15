@@ -228,7 +228,6 @@ public class CallFeaturesSetting extends PreferenceActivity
             "button_choose_people_lookup_provider";
     private static final String BUTTON_CHOOSE_REVERSE_LOOKUP_PROVIDER =
             "button_choose_reverse_lookup_provider";
-
     private static final String BUTTON_ALLOW_CALL_RECORDING =
             "button_allow_call_recording";
 
