@@ -213,6 +213,9 @@ public class CallFeaturesSetting extends PreferenceActivity
     private static final String SIP_SETTINGS_CATEGORY_KEY =
             "sip_settings_category_key";
 
+    private static final String BUTTON_NON_INTRUSIVE_INCALL_KEY = "button_non_intrusive_incall";
+    private static final String BUTTON_SMART_PHONE_CALL_KEY = "button_smart_phone_call";
+
     private static final String SWITCH_ENABLE_FORWARD_LOOKUP =
             "switch_enable_forward_lookup";
     private static final String SWITCH_ENABLE_PEOPLE_LOOKUP =
@@ -225,9 +228,6 @@ public class CallFeaturesSetting extends PreferenceActivity
             "button_choose_people_lookup_provider";
     private static final String BUTTON_CHOOSE_REVERSE_LOOKUP_PROVIDER =
             "button_choose_reverse_lookup_provider";
-
-    private static final String BUTTON_NON_INTRUSIVE_INCALL_KEY =
-            "button_non_intrusive_incall";
 
     private static final String BUTTON_ALLOW_CALL_RECORDING =
             "button_allow_call_recording";
@@ -350,6 +350,10 @@ public class CallFeaturesSetting extends PreferenceActivity
     private CheckBoxPreference mVoicemailNotificationVibrate;
     private SipSharedPreferences mSipSharedPreferences;
     private PreferenceScreen mButtonBlacklist;
+    private CheckBoxPreference mNonIntrusiveInCall;
+    private CheckBoxPreference mCallEndSound;
+    private CheckBoxPreference mSmartCall;
+    private ListPreference mFlipAction;
     private CheckBoxPreference mEnableForwardLookup;
     private CheckBoxPreference mEnablePeopleLookup;
     private CheckBoxPreference mEnableReverseLookup;
@@ -358,7 +362,6 @@ public class CallFeaturesSetting extends PreferenceActivity
     private ListPreference mChooseReverseLookupProvider;
     private ListPreference mT9SearchInputLocale;
     private CheckBoxPreference mButtonProximity;
-    private CheckBoxPreference mNonIntrusiveInCall;
     private CheckBoxPreference mAllowCallRecording;
 
     private class VoiceMailProvider {
@@ -706,6 +709,9 @@ public class CallFeaturesSetting extends PreferenceActivity
                 Settings.System.putBoolean(getContentResolver(),
                         Settings.System.ALLOW_CALL_RECORDING, false);
             }
+        } else if (preference == mSmartCall){
+            Settings.System.putInt(getContentResolver(), Settings.System.SMART_PHONE_CALLER,
+                    mSmartCall.isChecked() ? 1 : 0);
             return true;
         }
         return false;
@@ -1801,6 +1807,37 @@ public class CallFeaturesSetting extends PreferenceActivity
         mAllowCallRecording = (CheckBoxPreference) findPreference(BUTTON_ALLOW_CALL_RECORDING);
         mAllowCallRecording.setChecked(Settings.System.getBoolean(getContentResolver(),
                 Settings.System.ALLOW_CALL_RECORDING, false));
+
+        mSmartCall = (CheckBoxPreference) findPreference(BUTTON_SMART_PHONE_CALL_KEY);
+        mSmartCall.setChecked(Settings.System.getInt(getContentResolver(),
+                Settings.System.SMART_PHONE_CALLER, 0) != 0 ? true : false);
+
+        mEnableForwardLookup = (CheckBoxPreference)
+
+                findPreference(SWITCH_ENABLE_FORWARD_LOOKUP);
+        mEnablePeopleLookup = (CheckBoxPreference)
+                findPreference(SWITCH_ENABLE_PEOPLE_LOOKUP);
+        mEnableReverseLookup = (CheckBoxPreference)
+                findPreference(SWITCH_ENABLE_REVERSE_LOOKUP);
+
+        mEnableForwardLookup.setOnPreferenceChangeListener(this);
+        mEnablePeopleLookup.setOnPreferenceChangeListener(this);
+        mEnableReverseLookup.setOnPreferenceChangeListener(this);
+
+        restoreLookupProviderSwitches();
+
+        mChooseForwardLookupProvider = (ListPreference)
+                findPreference(BUTTON_CHOOSE_FORWARD_LOOKUP_PROVIDER);
+        mChoosePeopleLookupProvider = (ListPreference)
+                findPreference(BUTTON_CHOOSE_PEOPLE_LOOKUP_PROVIDER);
+        mChooseReverseLookupProvider = (ListPreference)
+                findPreference(BUTTON_CHOOSE_REVERSE_LOOKUP_PROVIDER);
+
+        mChooseForwardLookupProvider.setOnPreferenceChangeListener(this);
+        mChoosePeopleLookupProvider.setOnPreferenceChangeListener(this);
+        mChooseReverseLookupProvider.setOnPreferenceChangeListener(this);
+
+        restoreLookupProviders();
 
         // create intent to bring up contact list
         mContactListIntent = new Intent(Intent.ACTION_GET_CONTENT);
