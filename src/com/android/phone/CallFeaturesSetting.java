@@ -229,6 +229,13 @@ public class CallFeaturesSetting extends PreferenceActivity
     private static final String BUTTON_NON_INTRUSIVE_INCALL_KEY =
             "button_non_intrusive_incall";
 
+    private static final String BUTTON_ALLOW_CALL_RECORDING =
+            "button_allow_call_recording";
+
+    // To track whether a confirmation dialog was clicked.
+    private boolean mDialogClicked;
+    private Dialog mWaiverDialog;
+
     private Intent mContactListIntent;
 
     /** Event for Async voicemail change call */
@@ -352,6 +359,7 @@ public class CallFeaturesSetting extends PreferenceActivity
     private ListPreference mT9SearchInputLocale;
     private CheckBoxPreference mButtonProximity;
     private CheckBoxPreference mNonIntrusiveInCall;
+    private CheckBoxPreference mAllowCallRecording;
 
     private class VoiceMailProvider {
         public VoiceMailProvider(String name, Intent intent) {
@@ -644,6 +652,60 @@ public class CallFeaturesSetting extends PreferenceActivity
         } else if (preference == mNonIntrusiveInCall){
             Settings.System.putInt(getContentResolver(), Settings.System.NON_INTRUSIVE_INCALL,
                     mNonIntrusiveInCall.isChecked() ? 1 : 0);
+            return true;
+        } else if (preference == mAllowCallRecording) {
+            if (mAllowCallRecording.isChecked()) {
+                // User is trying to enable the feature, display the waiver
+                mDialogClicked = false;
+                dismissDialog();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.cyanogenmod_waiver_body);
+                builder.setTitle(R.string.cyanogenmod_waiver_title);
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (dialog == mWaiverDialog) {
+                            if (!mDialogClicked) {
+                                mAllowCallRecording.setChecked(false);
+                            }
+                            mWaiverDialog = null;
+                        }
+                    }
+                });
+
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (dialog == mWaiverDialog) {
+                            if (which == DialogInterface.BUTTON_POSITIVE) {
+                                mDialogClicked = true;
+                                Settings.System.putBoolean(getContentResolver(),
+                                        Settings.System.ALLOW_CALL_RECORDING, true);
+                            }
+                        }
+                    }
+                });
+
+                mWaiverDialog = builder.show();
+                mWaiverDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        // Assuming that onClick gets called first
+                        if (dialog == mWaiverDialog) {
+                            if (!mDialogClicked) {
+                                mAllowCallRecording.setChecked(false);
+                            }
+                            mWaiverDialog = null;
+                        }
+                    }
+                });
+            } else {
+                Settings.System.putBoolean(getContentResolver(),
+                        Settings.System.ALLOW_CALL_RECORDING, false);
+            }
             return true;
         }
         return false;
@@ -1736,6 +1798,10 @@ public class CallFeaturesSetting extends PreferenceActivity
         mNonIntrusiveInCall.setChecked(Settings.System.getInt(getContentResolver(),
                 Settings.System.NON_INTRUSIVE_INCALL, 1) == 0 ? false : true);
 
+        mAllowCallRecording = (CheckBoxPreference) findPreference(BUTTON_ALLOW_CALL_RECORDING);
+        mAllowCallRecording.setChecked(Settings.System.getBoolean(getContentResolver(),
+                Settings.System.ALLOW_CALL_RECORDING, false));
+
         // create intent to bring up contact list
         mContactListIntent = new Intent(Intent.ACTION_GET_CONTENT);
         mContactListIntent.setType(android.provider.Contacts.Phones.CONTENT_ITEM_TYPE);
@@ -2671,5 +2737,12 @@ public class CallFeaturesSetting extends PreferenceActivity
 
     private static void log(String msg) {
         if (DBG)  Log.d(LOG_TAG, msg);
+    }
+
+    private void dismissDialog() {
+        if (mWaiverDialog != null) {
+            mWaiverDialog.dismiss();
+            mWaiverDialog = null;
+        }
     }
 }
