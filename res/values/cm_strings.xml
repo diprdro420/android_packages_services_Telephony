@@ -501,6 +501,7 @@
     <!-- Non Intrusive Incall UI -->
     <string name="non_intrusive_incall_title">Non intrusive</string>
     <string name="non_intrusive_incall_summary">Use non intrusive dialog for incoming calls</string>
+<<<<<<< HEAD
 
     <!-- Call Recording -->
     <string name="allow_call_recording_title">Allow call recording</string>
@@ -510,4 +511,15 @@
     <string name="cyanogenmod_waiver_title">Waiver</string>
     <string name="cyanogenmod_waiver_body">Changing this setting may be against your state or government laws.\n\nIn selecting \'OK\' below, you acknowledge this warning and waive, indemnify and hold harmless CyanogenMod and its contributors from all legal liabilities.</string>
 
+||||||| merged common ancestors
+=======
+
+    <!-- Call Recording -->
+    <string name="allow_call_recording_title">Allow call recording</string>
+    <string name="allow_call_recording_summary">Show call recording button during a call</string>
+
+    <!-- Waiver -->
+    <string name="cyanogenmod_waiver_title">Waiver</string>
+    <string name="cyanogenmod_waiver_body">Changing this setting may be against your state or government laws.\n\nIn selecting \'OK\' below, you acknowledge this warning and waive, indemnify and hold harmless CyanogenMod and its contributors from all legal liabilities.</string>
+>>>>>>> Telephony: Allow enabling call recording (3/3)
 </resources>

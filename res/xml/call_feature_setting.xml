@@ -306,6 +306,7 @@
             android:targetClass="com.android.phone.CdmaCallOptions"/>
     </PreferenceScreen>
 
+<<<<<<< HEAD
     <CheckBoxPreference
         android:key="button_smart_phone_call"
         android:title="@string/smart_phone_call_title"
@@ -313,6 +314,10 @@
         android:persistent="false"
         android:defaultValue="false" />
 
+||||||| merged common ancestors
+
+=======
+>>>>>>> Telephony: Allow enabling call recording (3/3)
     <CheckBoxPreference
         android:key="button_non_intrusive_incall"
         android:title="@string/non_intrusive_incall_title"
