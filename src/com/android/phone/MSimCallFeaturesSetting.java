@@ -20,6 +20,7 @@
 package com.android.phone;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -65,7 +66,14 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
 
     private static final String BUTTON_NON_INTRUSIVE_INCALL_KEY = "button_non_intrusive_incall";
 
+    private static final String BUTTON_ALLOW_CALL_RECORDING = "button_allow_call_recording";
+
+    // To track whether a confirmation dialog was clicked.
+    private boolean mDialogClicked;
+    private Dialog mWaiverDialog;
+
     private CheckBoxPreference mNonIntrusiveInCall;
+    private CheckBoxPreference mAllowCallRecording;
 
     private PreferenceScreen mButtonXDivert;
     private int mNumPhones;
@@ -80,6 +88,59 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
             Settings.System.putInt(getContentResolver(), Settings.System.NON_INTRUSIVE_INCALL,
                     mNonIntrusiveInCall.isChecked() ? 1 : 0);
             return true;
+        } else if (preference == mAllowCallRecording) {
+            if (mAllowCallRecording.isChecked()) {
+                // User is trying to enable the feature, display the waiver
+                mDialogClicked = false;
+                dismissDialog();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.cyanogenmod_waiver_body);
+                builder.setTitle(R.string.cyanogenmod_waiver_title);
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (dialog == mWaiverDialog) {
+                            if (!mDialogClicked) {
+                                mAllowCallRecording.setChecked(false);
+                            }
+                            mWaiverDialog = null;
+                        }
+                    }
+                });
+
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (dialog == mWaiverDialog) {
+                            if (which == DialogInterface.BUTTON_POSITIVE) {
+                                mDialogClicked = true;
+                                Settings.System.putBoolean(getContentResolver(),
+                                        Settings.System.ALLOW_CALL_RECORDING, true);
+                            }
+                        }
+                    }
+                });
+
+                mWaiverDialog = builder.show();
+                mWaiverDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        // Assuming that onClick gets called first
+                        if (dialog == mWaiverDialog) {
+                            if (!mDialogClicked) {
+                                mAllowCallRecording.setChecked(false);
+                            }
+                            mWaiverDialog = null;
+                        }
+                    }
+                });
+            } else {
+                Settings.System.putBoolean(getContentResolver(),
+                        Settings.System.ALLOW_CALL_RECORDING, false);
+            }
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
@@ -111,6 +172,12 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
         if (mNonIntrusiveInCall != null) {
             mNonIntrusiveInCall.setChecked(Settings.System.getInt(getContentResolver(),
                     Settings.System.NON_INTRUSIVE_INCALL, 1) == 0 ? false : true);
+        }
+
+        mAllowCallRecording = (CheckBoxPreference) findPreference(BUTTON_ALLOW_CALL_RECORDING);
+        if (mAllowCallRecording != null) {
+            mAllowCallRecording.setChecked(Settings.System.getBoolean(getContentResolver(),
+                    Settings.System.ALLOW_CALL_RECORDING, false));
         }
     }
 
@@ -250,5 +317,12 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
 
     private static void log(String msg) {
         if (DBG) Log.d(LOG_TAG, msg);
+    }
+
+    private void dismissDialog() {
+        if (mWaiverDialog != null) {
+            mWaiverDialog.dismiss();
+            mWaiverDialog = null;
+        }
     }
 }
