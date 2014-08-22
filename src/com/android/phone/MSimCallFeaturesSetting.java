@@ -23,8 +23,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
+import android.provider.Settings;
 import android.telephony.MSimTelephonyManager;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
@@ -61,6 +63,10 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
     private static final String BUTTON_SELECT_SUB_KEY  = "button_call_independent_serv";
     private static final String BUTTON_XDIVERT_KEY     = "button_xdivert";
 
+    private static final String BUTTON_NON_INTRUSIVE_INCALL_KEY = "button_non_intrusive_incall";
+
+    private CheckBoxPreference mNonIntrusiveInCall;
+
     private PreferenceScreen mButtonXDivert;
     private int mNumPhones;
     private SubscriptionManager mSubManager;
@@ -69,6 +75,10 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (preference == mButtonXDivert) {
             processXDivert();
+            return true;
+        } else if (preference == mNonIntrusiveInCall) {
+            Settings.System.putInt(getContentResolver(), Settings.System.NON_INTRUSIVE_INCALL,
+                    mNonIntrusiveInCall.isChecked() ? 1 : 0);
             return true;
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
@@ -94,6 +104,13 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
         mNumPhones = MSimTelephonyManager.getDefault().getPhoneCount();
         if (mButtonXDivert != null) {
             mButtonXDivert.setOnPreferenceChangeListener(this);
+        }
+        removeOptionalPrefs(prefSet);
+
+        mNonIntrusiveInCall = (CheckBoxPreference) findPreference(BUTTON_NON_INTRUSIVE_INCALL_KEY);
+        if (mNonIntrusiveInCall != null) {
+            mNonIntrusiveInCall.setChecked(Settings.System.getInt(getContentResolver(),
+                    Settings.System.NON_INTRUSIVE_INCALL, 1) == 0 ? false : true);
         }
     }
 
