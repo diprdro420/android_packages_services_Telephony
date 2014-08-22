@@ -64,7 +64,6 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
     private static final String BUTTON_SELECT_SUB_KEY  = "button_call_independent_serv";
     private static final String BUTTON_XDIVERT_KEY     = "button_xdivert";
 
-<<<<<<< HEAD
     private static final String BUTTON_NON_INTRUSIVE_INCALL_KEY = "button_non_intrusive_incall";
 
     private static final String BUTTON_ALLOW_CALL_RECORDING = "button_allow_call_recording";
@@ -76,13 +75,6 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
     private CheckBoxPreference mNonIntrusiveInCall;
     private CheckBoxPreference mAllowCallRecording;
 
-||||||| merged common ancestors
-=======
-    private static final String BUTTON_NON_INTRUSIVE_INCALL_KEY = "button_non_intrusive_incall";
-
-    private CheckBoxPreference mNonIntrusiveInCall;
-
->>>>>>> Telephony(MSIM): allow disabling non intrusive incall ui
     private PreferenceScreen mButtonXDivert;
     private int mNumPhones;
     private SubscriptionManager mSubManager;
@@ -92,7 +84,6 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
         if (preference == mButtonXDivert) {
             processXDivert();
             return true;
-<<<<<<< HEAD
         } else if (preference == mNonIntrusiveInCall) {
             Settings.System.putInt(getContentResolver(), Settings.System.NON_INTRUSIVE_INCALL,
                     mNonIntrusiveInCall.isChecked() ? 1 : 0);
@@ -150,13 +141,6 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
                 Settings.System.putBoolean(getContentResolver(),
                         Settings.System.ALLOW_CALL_RECORDING, false);
             }
-||||||| merged common ancestors
-=======
-        } else if (preference == mNonIntrusiveInCall) {
-            Settings.System.putInt(getContentResolver(), Settings.System.NON_INTRUSIVE_INCALL,
-                    mNonIntrusiveInCall.isChecked() ? 1 : 0);
-            return true;
->>>>>>> Telephony(MSIM): allow disabling non intrusive incall ui
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
@@ -182,7 +166,6 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
         if (mButtonXDivert != null) {
             mButtonXDivert.setOnPreferenceChangeListener(this);
         }
-<<<<<<< HEAD
         
         mNonIntrusiveInCall = (CheckBoxPreference) findPreference(BUTTON_NON_INTRUSIVE_INCALL_KEY);
         if (mNonIntrusiveInCall != null) {
@@ -195,16 +178,6 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
             mAllowCallRecording.setChecked(Settings.System.getBoolean(getContentResolver(),
                     Settings.System.ALLOW_CALL_RECORDING, false));
         }
-||||||| merged common ancestors
-=======
-        removeOptionalPrefs(prefSet);
-
-        mNonIntrusiveInCall = (CheckBoxPreference) findPreference(BUTTON_NON_INTRUSIVE_INCALL_KEY);
-        if (mNonIntrusiveInCall != null) {
-            mNonIntrusiveInCall.setChecked(Settings.System.getInt(getContentResolver(),
-                    Settings.System.NON_INTRUSIVE_INCALL, 1) == 0 ? false : true);
-        }
->>>>>>> Telephony(MSIM): allow disabling non intrusive incall ui
     }
 
 
