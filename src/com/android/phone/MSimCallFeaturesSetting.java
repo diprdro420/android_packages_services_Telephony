@@ -166,8 +166,7 @@ public class MSimCallFeaturesSetting extends CallFeaturesSetting {
         if (mButtonXDivert != null) {
             mButtonXDivert.setOnPreferenceChangeListener(this);
         }
-        removeOptionalPrefs(prefSet);
-
+        
         mNonIntrusiveInCall = (CheckBoxPreference) findPreference(BUTTON_NON_INTRUSIVE_INCALL_KEY);
         if (mNonIntrusiveInCall != null) {
             mNonIntrusiveInCall.setChecked(Settings.System.getInt(getContentResolver(),
